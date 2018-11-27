@@ -24,7 +24,7 @@ title = sysfont.render("HelloWorld!", True, (0, 0, 0))
 start = sysfont1.render("TAP TO SPACE", True, (0, 0, 0))
 
 # イメージを用意
-playerImg = pygame.image.load("akari_dot2.png").convert_alpha()
+playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
 playerImg_rect = playerImg.get_rect()
 # print(playerImg_rect.height)
 
