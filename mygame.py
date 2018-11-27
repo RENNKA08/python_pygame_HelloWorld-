@@ -139,3 +139,5 @@ while True:
         if event.type == KEYDOWN:  # 終了イベント
             if event.key == K_ESCAPE:
                 sys.exit()
+
+                # unko
