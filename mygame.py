@@ -39,7 +39,7 @@ playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
 playerImg_rect = playerImg.get_rect()
 print(playerImg_rect.height)
 
-# 初期化
+# 初期化2
 while True:
     x_load.append(i)
     y_load.append(Y_std)
@@ -98,39 +98,40 @@ while True:
             break
     if load_judge == 1:
         load_interval += 1
-        if load_interval == 100:
+        if load_interval == 150:
             load_judge = 0
             load_interval = 0
     if load_judge == 0:
         # print(time)
         if new_field == Y_std:
-            if load_random < 5:
+            if load_random < 4:
                 new_field = Y_std + y_move
                 load_judge = 1
         if new_field == Y_std + y_move:
-            if load_random > 5:
-                if load_random < 10:
+            if load_random > 4:
+                if load_random < 8:
                     new_field = Y_std + y_move + y_move
                     load_judge = 1
-            if load_random < 995:
-                if load_random > 990:
+            if load_random < 996:
+                if load_random > 992:
                     new_field = Y_std
                     load_judge = 1
         if new_field == Y_std + y_move + y_move:
-            if load_random > 995:
+            if load_random > 996:
                 new_field = Y_std + y_move
                 load_judge = 1
     y_load[640] = new_field
     i = 640
     while True:
-        pygame.draw.line(screen, (0, 0, 0), (x_load[i], y_load[i]), (x_load[i] - 1, y_load[i]), 1)
+        pygame.draw.line(screen, (0, 0, 0), (x_load[i], y_load[i]), (x_load[i] - 1, y_load[i]), 25)
         i -= 1
         if i == -1:
             break
 
+    # キャラの描画
     screen.blit(playerImg, (x, y))
 
-    pygame.display.update()
+    pygame.display.update()  # ここまで更新
 
     for event in pygame.event.get():
         if event.type == KEYDOWN:
