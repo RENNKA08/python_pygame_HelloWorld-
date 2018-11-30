@@ -15,9 +15,20 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 # タイトルバーの文字列をセット
 pygame.display.set_caption(u"HelloWorld!")
 
+# 初期化
+X_std = 100
+Y_std = 240
+x_load = []
+y_load = []
+i = 0
+time = 0
+load_judge = 0
+load_interval = 0
+
 # フォントの作成
 sysfont = pygame.font.SysFont(None, 100)
 sysfont1 = pygame.font.SysFont(None, 30)
+sysfont2 = pygame.font.SysFont(None, 20)
 
 # テキストを描画したSurfaceを作成
 title = sysfont.render("HelloWorld!", True, (0, 0, 0))
@@ -29,11 +40,6 @@ playerImg_rect = playerImg.get_rect()
 print(playerImg_rect.height)
 
 # 初期化
-X_std = 100
-Y_std = 240
-x_load = []
-y_load = []
-i = 0
 while True:
     x_load.append(i)
     y_load.append(Y_std)
@@ -77,6 +83,11 @@ while True:
 while True:
     screen.fill((255, 255, 255))
 
+    # 距離
+    load_length = sysfont2.render(format(int(time/100)), True, (0, 0, 0))
+    screen.blit(load_length, (600, 10))
+    time += 1
+
     # 道の生成
     load_random = random.uniform(0, 1000)
     i = 0
@@ -85,19 +96,30 @@ while True:
         i += 1
         if i == 640:
             break
-    if new_field == Y_std:
-        if load_random < 1:
-            new_field = Y_std + y_move
-    if new_field == Y_std + y_move:
-        if load_random > 1:
-            if load_random < 2:
-                new_field = Y_std + y_move + y_move
-        if load_random < 999:
-            if load_random > 998:
-                new_field = Y_std
-    if new_field == Y_std + y_move + y_move:
-        if load_random > 999:
-            new_field = Y_std + y_move
+    if load_judge == 1:
+        load_interval += 1
+        if load_interval == 100:
+            load_judge = 0
+            load_interval = 0
+    if load_judge == 0:
+        # print(time)
+        if new_field == Y_std:
+            if load_random < 5:
+                new_field = Y_std + y_move
+                load_judge = 1
+        if new_field == Y_std + y_move:
+            if load_random > 5:
+                if load_random < 10:
+                    new_field = Y_std + y_move + y_move
+                    load_judge = 1
+            if load_random < 995:
+                if load_random > 990:
+                    new_field = Y_std
+                    load_judge = 1
+        if new_field == Y_std + y_move + y_move:
+            if load_random > 995:
+                new_field = Y_std + y_move
+                load_judge = 1
     y_load[640] = new_field
     i = 640
     while True:
