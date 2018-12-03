@@ -142,10 +142,8 @@ while True:
             if event.key == K_DOWN:
                 if y != Y_std + y_move:
                     y += y_move
-        m = 0
+        m = 89
         while True:
-            if m == 0:
-                m = 89
             m += 1
             if (y + y_move) == y_load[m]:
                 break
