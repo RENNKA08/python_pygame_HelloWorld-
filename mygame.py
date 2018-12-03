@@ -37,15 +37,9 @@ start = sysfont1.render("TAP TO SPACE", True, (0, 0, 0))
 # イメージを用意
 playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
 playerImg_rect = playerImg.get_rect()
-print(playerImg_rect.height)
+# print(playerImg_rect.height)
 
 # 初期化2
-while True:
-    x_load.append(i)
-    y_load.append(Y_std)
-    i += 1
-    if i == 641:
-        break
 # print(x_load)
 x = X_std
 x_move = 20  # 要変更
@@ -53,6 +47,12 @@ y = Y_std
 y_move = playerImg_rect.height
 load_random = 0
 new_field = Y_std
+while True:
+    x_load.append(i)
+    y_load.append(Y_std + y_move)
+    i += 1
+    if i == 641:
+        break
 
 # ゲームループ
 while True:
@@ -82,7 +82,8 @@ while True:
 
 while True:
     screen.fill((255, 255, 255))
-
+    flag_finish = False
+    flag1 = False
     # 距離
     load_length = sysfont2.render(format(int(time/100)), True, (0, 0, 0))
     screen.blit(load_length, (600, 10))
@@ -137,15 +138,24 @@ while True:
         if event.type == KEYDOWN:
             if event.key == K_UP:
                 if y != Y_std - y_move:
-                    x += x_move
                     y -= y_move
             if event.key == K_DOWN:
                 if y != Y_std + y_move:
-                    x -= x_move
                     y += y_move
-
+        m = 0
+        while True:
+            if m == 0:
+                m = 89
+            m += 1
+            if (y + y_move) == y_load[m]:
+                break
+            if m == 200:
+                flag_finish = True
+                break
         if event.type == QUIT:
             sys.exit()
         if event.type == KEYDOWN:  # 終了イベント
             if event.key == K_ESCAPE:
                 sys.exit()
+        if flag_finish:
+            sys.exit()
