@@ -163,6 +163,7 @@ while True:
 
 while True:
     screen.fill((0, 0, 0))   # 画面を黒色で塗りつぶす
+    flag3 = False
 
     load_length1 = sysfont3.render(format(int(time / 100)), True, (255, 255, 255))
 
@@ -179,8 +180,3 @@ while True:
         if event.type == KEYDOWN:  # 終了イベント
             if event.key == K_ESCAPE:
                 sys.exit()
-        if event.type == KEYDOWN:
-            if event.key == K_SPACE:
-                flag = True
-                break
-
