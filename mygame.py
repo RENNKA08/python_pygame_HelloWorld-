@@ -29,10 +29,13 @@ load_interval = 0
 sysfont = pygame.font.SysFont(None, 100)
 sysfont1 = pygame.font.SysFont(None, 30)
 sysfont2 = pygame.font.SysFont(None, 20)
+sysfont3 = pygame.font.SysFont(None, 80)
 
 # テキストを描画したSurfaceを作成
 title = sysfont.render("HelloWorld!", True, (0, 0, 0))
 start = sysfont1.render("TAP TO SPACE", True, (0, 0, 0))
+end = sysfont.render("Game over", True, (255, 0, 0))
+score = sysfont1.render("score", True, (255, 255, 255))
 
 # イメージを用意
 playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
@@ -155,5 +158,29 @@ while True:
         if event.type == KEYDOWN:  # 終了イベント
             if event.key == K_ESCAPE:
                 sys.exit()
-        if flag_finish:
+    if flag_finish:
+        break
+
+while True:
+    screen.fill((0, 0, 0))   # 画面を黒色で塗りつぶす
+
+    load_length1 = sysfont3.render(format(int(time / 100)), True, (255, 255, 255))
+
+    # テキストを描画する
+    screen.blit(end, (125, 180))
+    screen.blit(score, (240, 300))
+    screen.blit(load_length1, (300, 275))
+
+    pygame.display.update()
+
+    for event in pygame.event.get():
+        if event.type == QUIT:
             sys.exit()
+        if event.type == KEYDOWN:  # 終了イベント
+            if event.key == K_ESCAPE:
+                sys.exit()
+        if event.type == KEYDOWN:
+            if event.key == K_SPACE:
+                flag = True
+                break
+
