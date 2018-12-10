@@ -5,25 +5,52 @@ from pygame.locals import *
 import sys
 import os
 import random
-
+START, PLAY, GAMEOVER = (0, 1, 2)  # ゲーム状態
 SCREEN_SIZE = (640, 480)  # 画面サイズ
 
-# Pygameを初期化
-pygame.init()
-# SCREEN_SIZEの画面を作成
-screen = pygame.display.set_mode(SCREEN_SIZE)
-# タイトルバーの文字列をセット
-pygame.display.set_caption(u"HelloWorld!")
+class Mygame:
+    def __init__(self):
+        # Pygameを初期化
+        pygame.init()
+        # SCREEN_SIZEの画面を作成
+        screen = pygame.display.set_mode(SCREEN_SIZE)
+        # タイトルバーの文字列をセット
+        pygame.display.set_caption(u"HelloWorld!")
+        # 素材のロード
+        self.load_images()
+        self.load_sounds()
+        # ゲームオブジェクトを初期化
+        self.init_game()
+        # メインループ開始
+        clock = pygame.time.Clock()
+        while True:
+            clock.tick(60)
+            self.update()
+            self.draw(screen)
+            pygame.display.update()
+            self.key_hanler()
+    def init_game(self):
+        """ゲームオブジェクトの初期化"""
+        # ゲーム状態
+        self.game_state = START
+        X_std = 100
+        Y_std = 240
+        x_load = []
+        y_load = []
+        i = 0
+        time = 0
+        load_judge = 0
+        load_interval = 0
+    def update(self):
+        """ゲーム状態の更新"""
+        if self.game_state == PLAY:
+            self.all.update()
+            # 道の正誤判定
+            self.load_detection()
+            if flag_finish:
 
-# 初期化
-X_std = 100
-Y_std = 240
-x_load = []
-y_load = []
-i = 0
-time = 0
-load_judge = 0
-load_interval = 0
+
+
 
 # フォントの作成
 sysfont = pygame.font.SysFont(None, 100)
