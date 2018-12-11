@@ -194,12 +194,12 @@ class Mygame:
     def key_handler_PLAY(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
-                if event.key == K_UP:
+                if event.key == K_UP or event.key == K_RIGHT or event.key == K_d:
                     if self.y != Y_std - y_move:
                         self.y -= y_move
                         # キャラの移動効果音再生
                         self.charSwitch_sound.play()
-                if event.key == K_DOWN:
+                if event.key == K_DOWN or event.key == K_LEFT or event.key == K_a:
                     if self.y != Y_std + y_move:
                         self.y += y_move
                         # キャラの移動効果音再生
