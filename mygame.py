@@ -48,6 +48,7 @@ class Mygame:
         self.load_interval = 0
         self.load_random = 0
         self.flag_finish = False
+        self.flag_endBgm = False
         self.new_field = Y_std
         self.x = X_std
         self.y = Y_std
@@ -81,6 +82,10 @@ class Mygame:
         elif self.game_state == PLAY:
             # 画面を白色で塗りつぶす
             screen.fill((255, 255, 255))
+            # ゲーム中のBGM
+            if self.time == 0:
+                pygame.mixer.music.load("zangyousenshi.mp3")
+                pygame.mixer.music.play(-1)  # ループ再生
             # scoreを描画
             sysfont2 = pygame.font.SysFont(None, 20)
             load_length = sysfont2.render(format(int(self.time / 100)), True, (0, 0, 0))
@@ -133,26 +138,36 @@ class Mygame:
             self.load_detection()
             if self.flag_finish:
                 self.game_state = GAMEOVER
+                # BGMの停止
+                pygame.mixer.music.stop()
 
         elif self.game_state == GAMEOVER:
             # 画面を黒色で塗りつぶす
             screen.fill((0, 0, 0))
+            # result画面のbgm
+            if self.flag_endBgm == False:
+                pygame.mixer.music.load("orehamou.mp3")
+                pygame.mixer.music.play(-1)  # ループ再生
+                self.flag_endBgm = True
             # GameOverを描画
             sysfont = pygame.font.SysFont(None, 100)
             end = sysfont.render("Game Over", True, (255, 0, 0))
-            screen.blit(end, (125, 180))
+            screen.blit(end, (135, 180))
             # scoreを描画
             sysfont1 = pygame.font.SysFont(None, 30)
             score = sysfont1.render("score", True, (255, 255, 255))
-            screen.blit(score, (240, 300))
+            screen.blit(score, (250, 300))
             # load_length
             sysfont3 = pygame.font.SysFont(None, 80)
             load_length1 = sysfont3.render(format(int(self.time / 100)), True, (255, 255, 255))
-            screen.blit(load_length1, (300, 275))
+            screen.blit(load_length1, (320, 275))
             # TAPTOSPACE
-            sysfont1 = pygame.font.SysFont(None, 30)
             start = sysfont1.render("TAP TO SPACE", True, (255, 255, 255))
             screen.blit(start, (240, 350))
+            # クレジット表記
+            sysfont4 = pygame.font.Font("ipaexg.ttf", 10)
+            credit = sysfont4.render("効果音素材：ポケットサウンド – https://pocket-se.info/", True, (255, 255, 255))
+            screen.blit(credit, (360, 465))
 
     def key_handler(self):
         """キーハンドラー"""
@@ -164,12 +179,17 @@ class Mygame:
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN and event.key == K_SPACE:
+                # 値の初期化
                 self.init_game()
+                # 画面の切り替え効果音再生
+                self.sceneSwitch_sound.play()
                 if self.game_state == START:
                     self.game_state = PLAY
                 elif self.game_state == GAMEOVER:
                     self.init_game()
                     self.game_state = PLAY
+                    # BGMの停止
+                    pygame.mixer.music.stop()
 
     def key_handler_PLAY(self):
         for event in pygame.event.get():
@@ -177,9 +197,13 @@ class Mygame:
                 if event.key == K_UP:
                     if self.y != Y_std - y_move:
                         self.y -= y_move
+                        # キャラの移動効果音再生
+                        self.charSwitch_sound.play()
                 if event.key == K_DOWN:
                     if self.y != Y_std + y_move:
                         self.y += y_move
+                        # キャラの移動効果音再生
+                        self.charSwitch_sound.play()
 
     def load_detection(self):
         """正誤判定"""
@@ -199,6 +223,12 @@ class Mygame:
 
     def load_sounds(self):
         """サウンドのロード"""
+        pygame.mixer.quit()
+        pygame.mixer.init(44100, 16, 2, 1024)
+        # 画面の切り替え効果音
+        self.sceneSwitch_sound = pygame.mixer.Sound("sceneswitch2.wav")
+        # キャラの移動効果音
+        self.charSwitch_sound = pygame.mixer.Sound("jump-anime1.wav")
 
 if __name__ == "__main__":
     Mygame()
