@@ -133,7 +133,6 @@ class Mygame:
             self.load_detection()
             if self.flag_finish:
                 self.game_state = GAMEOVER
-                self.init_game()
 
         elif self.game_state == GAMEOVER:
             # 画面を黒色で塗りつぶす
@@ -165,6 +164,7 @@ class Mygame:
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN and event.key == K_SPACE:
+                self.init_game()
                 if self.game_state == START:
                     self.game_state = PLAY
                 elif self.game_state == GAMEOVER:
