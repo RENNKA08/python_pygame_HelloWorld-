@@ -10,13 +10,9 @@ START, PLAY, GAMEOVER = (0, 1, 2)  # ゲーム状態
 SCREEN_SIZE = (640, 480)  # 画面サイズ
 X_std = 100
 Y_std = 240
-x_load = []
-y_load = []
 y_move = 88
-x = X_std
 x_move = 20  # 要変更
-y = Y_std
-new_field = Y_std
+
 class Mygame:
     def __init__(self):
         # Pygameを初期化
@@ -29,35 +25,46 @@ class Mygame:
         self.load_images()
         self.load_sounds()
         # ゲームオブジェクトを初期化
+        self.init_game_first()
         self.init_game()
+        self.flag_restart = False
         # メインループ開始
         # clock = pygame.time.Clock()
         while True:
             # clock.tick(60)
-            self.update()
+            # self.update()
             self.draw(screen)
             pygame.display.update()
             self.key_handler()
-    def init_game(self):
-        """ゲームオブジェクトの初期化"""
+    def init_game_first(self):
         # ゲーム状態
         self.game_state = START
+
+    def init_game(self):
+        """ゲームオブジェクトの初期化"""
+        self.time = 0
         i = 0
-        time = 0
-        load_judge = 0
-        load_interval = 0
-        load_random = 0
-        flag_finish = False
+        self.load_judge = 0
+        self.load_interval = 0
+        self.load_random = 0
+        self.flag_finish = False
+        self.new_field = Y_std
+        self.x = X_std
+        self.y = Y_std
+        self.x_load = []
+        self.y_load = []
         while True:
-            x_load.append(i)
-            y_load.append(Y_std + y_move)
+            self.x_load.append(i)
+            self.y_load.append(Y_std + y_move)
             i += 1
             if i == 641:
                 break
+
     def update(self):
         """ゲーム状態の更新"""
         if self.game_state == PLAY:
             self.update()
+
     def draw(self, screen):
         """描画"""
         if self.game_state == START:
@@ -76,56 +83,58 @@ class Mygame:
             screen.fill((255, 255, 255))
             # scoreを描画
             sysfont2 = pygame.font.SysFont(None, 20)
-            load_length = sysfont2.render(format(int(time / 100)), True, (0, 0, 0))
+            load_length = sysfont2.render(format(int(self.time / 100)), True, (0, 0, 0))
             screen.blit(load_length, (600, 10))
-            time += 1
+            self.time += 1
             # 道の生成
             load_random = random.uniform(0, 1000)
             i = 0
             while True:
-                y_load[i] = y_load[i + 1]
+                self.y_load[i] = self.y_load[i + 1]
                 i += 1
                 if i == 640:
                     break
-            if load_judge == 1:
-                load_interval += 1
-                if load_interval == 150:
-                    load_judge = 0
-                    load_interval = 0
-            if load_judge == 0:
+            if self.load_judge == 1:
+                self.load_interval += 1
+                if self.load_interval == 150:
+                    self.load_judge = 0
+                    self.load_interval = 0
+            if self.load_judge == 0:
                 # print(time)
-                if new_field == Y_std:
+                if self.new_field == Y_std:
                     if load_random < 4:
-                        new_field = Y_std + y_move
-                        load_judge = 1
-                if new_field == Y_std + y_move:
+                        self.new_field = Y_std + y_move
+                        self.load_judge = 1
+                if self.new_field == Y_std + y_move:
                     if load_random > 4:
                         if load_random < 8:
-                            new_field = Y_std + y_move + y_move
-                            load_judge = 1
+                            self.new_field = Y_std + y_move + y_move
+                            self.load_judge = 1
                     if load_random < 996:
                         if load_random > 992:
-                            new_field = Y_std
-                            load_judge = 1
-                if new_field == Y_std + y_move + y_move:
+                            self.new_field = Y_std
+                            self.load_judge = 1
+                if self.new_field == Y_std + y_move + y_move:
                     if load_random > 996:
-                        new_field = Y_std + y_move
-                        load_judge = 1
-            y_load[640] = new_field
+                        self.new_field = Y_std + y_move
+                        self.load_judge = 1
+            self.y_load[640] = self.new_field
             i = 640
             while True:
-                pygame.draw.line(screen, (0, 0, 0), (x_load[i], y_load[i]), (x_load[i] - 1, y_load[i]), 25)
+                pygame.draw.line(screen, (0, 0, 0), (self.x_load[i], self.y_load[i]), (self.x_load[i] - 1, self.y_load[i]), 25)
                 i -= 1
                 if i == -1:
                     break
             # キャラの描画
-            screen.blit(playerImg, (x, y))
+            screen.blit(self.playerImg, (self.x, self.y))
             # キャラの移動
             self.key_handler_PLAY()
             # 道の正誤判定
             self.load_detection()
-            if flag_finish:
+            if self.flag_finish:
                 self.game_state = GAMEOVER
+                self.init_game()
+
         elif self.game_state == GAMEOVER:
             # 画面を黒色で塗りつぶす
             screen.fill((0, 0, 0))
@@ -139,12 +148,13 @@ class Mygame:
             screen.blit(score, (240, 300))
             # load_length
             sysfont3 = pygame.font.SysFont(None, 80)
-            load_length1 = sysfont3.render(format(int(time / 100)), True, (255, 255, 255))
+            load_length1 = sysfont3.render(format(int(self.time / 100)), True, (255, 255, 255))
             screen.blit(load_length1, (300, 275))
             # TAPTOSPACE
             sysfont1 = pygame.font.SysFont(None, 30)
-            start = sysfont1.render("TAP TO SPACE", True, (0, 0, 0))
-            screen.blit(start, (240, 275))
+            start = sysfont1.render("TAP TO SPACE", True, (255, 255, 255))
+            screen.blit(start, (240, 350))
+
     def key_handler(self):
         """キーハンドラー"""
         for event in pygame.event.get():
@@ -160,29 +170,33 @@ class Mygame:
                 elif self.game_state == GAMEOVER:
                     self.init_game()
                     self.game_state = PLAY
+
     def key_handler_PLAY(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_UP:
-                    if y != Y_std - y_move:
-                        y -= y_move
+                    if self.y != Y_std - y_move:
+                        self.y -= y_move
                 if event.key == K_DOWN:
-                    if y != Y_std + y_move:
-                        y += y_move
+                    if self.y != Y_std + y_move:
+                        self.y += y_move
+
     def load_detection(self):
         """正誤判定"""
         # プレイヤーと道の正誤判定
         m = 89
         while True:
             m += 1
-            if (y + y_move) == y_load[m]:
+            if (self.y + y_move) == self.y_load[m]:
                 break
             if m == 200:
-                flag_finish = True
+                self.flag_finish = True
                 break
+
     def load_images(self):
         """イメージのロード"""
-        playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
+        self.playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
+
     def load_sounds(self):
         """サウンドのロード"""
 
