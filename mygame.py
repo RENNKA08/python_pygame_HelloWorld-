@@ -17,28 +17,34 @@ class Mygame:
     def __init__(self):
         # Pygameを初期化
         pygame.init()
+
         # SCREEN_SIZEの画面を作成
         screen = pygame.display.set_mode(SCREEN_SIZE)
+
         # タイトルバーの文字列をセット
         pygame.display.set_caption(u"HelloWorld!")
+
         # 素材のロード
         self.load_images()
         self.load_sounds()
-        # ゲームオブジェクトを初期化
-        self.init_game_first()
+
+        # ゲーム状態の初期化
+        self.game_state = START
+
+        # 値の初期化
         self.init_game()
+
+        #
         self.flag_restart = False
+
         # メインループ開始
         # clock = pygame.time.Clock()
         while True:
             # clock.tick(60)
             # self.update()
-            self.draw(screen)
-            pygame.display.update()
-            self.key_handler()
-    def init_game_first(self):
-        # ゲーム状態
-        self.game_state = START
+            self.draw(screen)  # 画面の描画
+            pygame.display.update()  # 画面の更新
+            self.key_handler()  # イベントの発生
 
     def init_game(self):
         """ゲームオブジェクトの初期化"""
@@ -82,6 +88,8 @@ class Mygame:
         elif self.game_state == PLAY:
             # 画面を白色で塗りつぶす
             screen.fill((255, 255, 255))
+            # 背景画像の追加
+            # screen.blit(self.backImg, (0, 0))
             # ゲーム中のBGM
             if self.time == 0:
                 pygame.mixer.music.load("zangyousenshi.mp3")
@@ -220,6 +228,7 @@ class Mygame:
     def load_images(self):
         """イメージのロード"""
         self.playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
+        self.backImg = pygame.image.load("forest.png")
 
     def load_sounds(self):
         """サウンドのロード"""
