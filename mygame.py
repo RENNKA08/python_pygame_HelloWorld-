@@ -15,7 +15,6 @@ x_move = 20
 
 class Mygame:
     def __init__(self):
-        """コンストラクタ"""
         # Pygameを初期化
         pygame.init()
 
@@ -38,7 +37,7 @@ class Mygame:
         # メインループ開始
         # clock = pygame.time.Clock()
         while True:
-            # clock.tick(60)
+            # clock.tick(10)
             self.draw(screen)        # 画面の描画
             pygame.display.update()  # 画面の更新
             self.key_handler()       # イベントの発生
@@ -85,62 +84,32 @@ class Mygame:
             """プレイ画面"""
             # 画面を白色で塗りつぶす
             screen.fill((255, 255, 255))
-            # 背景画像の追加
-            # screen.blit(self.backImg, (0, 0))
+
             # ゲーム中のBGM
-            if self.time == 0:
+            if self.time == 0:  # スタート時に再生
                 pygame.mixer.music.load("zangyousenshi.mp3")
                 pygame.mixer.music.play(-1)  # ループ再生
+
             # scoreを描画
             sysfont2 = pygame.font.SysFont(None, 20)
             load_length = sysfont2.render(format(int(self.time / 100)), True, (0, 0, 0))
             screen.blit(load_length, (600, 10))
+            # 更新のたびに追加
             self.time += 1
+
             # 道の生成
-            load_random = random.uniform(0, 1000)
-            i = 0
-            while True:
-                self.y_load[i] = self.y_load[i + 1]
-                i += 1
-                if i == 640:
-                    break
-            if self.load_judge == 1:
-                self.load_interval += 1
-                if self.load_interval == 150:
-                    self.load_judge = 0
-                    self.load_interval = 0
-            if self.load_judge == 0:
-                # print(time)
-                if self.new_field == Y_std:
-                    if load_random < 4:
-                        self.new_field = Y_std + y_move
-                        self.load_judge = 1
-                if self.new_field == Y_std + y_move:
-                    if load_random > 4:
-                        if load_random < 8:
-                            self.new_field = Y_std + y_move + y_move
-                            self.load_judge = 1
-                    if load_random < 996:
-                        if load_random > 992:
-                            self.new_field = Y_std
-                            self.load_judge = 1
-                if self.new_field == Y_std + y_move + y_move:
-                    if load_random > 996:
-                        self.new_field = Y_std + y_move
-                        self.load_judge = 1
-            self.y_load[640] = self.new_field
-            i = 640
-            while True:
-                pygame.draw.line(screen, (0, 0, 0), (self.x_load[i], self.y_load[i]), (self.x_load[i] - 1, self.y_load[i]), 25)
-                i -= 1
-                if i == -1:
-                    break
+            self.make_load(screen)
+
             # キャラの描画
             screen.blit(self.playerImg, (self.x, self.y))
+
             # キャラの移動
             self.key_handler_PLAY()
+
             # 道の正誤判定
             self.load_detection()
+
+            # プレイの終了処理
             if self.flag_finish:
                 self.game_state = GAMEOVER
                 # BGMの停止
@@ -167,7 +136,7 @@ class Mygame:
             score = sysfont1.render("score", True, (255, 255, 255))
             screen.blit(score, (250, 300))
 
-            # load_length
+            # スコアの表示
             sysfont3 = pygame.font.SysFont(None, 80)
             load_length1 = sysfont3.render(format(int(self.time / 100)), True, (255, 255, 255))
             screen.blit(load_length1, (320, 275))
@@ -227,6 +196,63 @@ class Mygame:
                         self.y += y_move
                         # キャラの移動効果音再生
                         self.charSwitch_sound.play()
+
+    def make_load(self, screen):
+        """道の生成"""
+        load_random = random.uniform(0, 1000)
+        i = 0
+
+        # 右のピクセルの線を左のピクセルにコピー
+        # x=640の値が更新のたびにだんだん左へ移動
+        while True:
+            self.y_load[i] = self.y_load[i + 1]
+            i += 1
+            if i == 640:
+                break
+
+        # 最低限の道の幅を用意
+        if self.load_judge == 1:
+            self.load_interval += 1
+            if self.load_interval == 150:
+                self.load_judge = 0
+                self.load_interval = 0
+
+        # randomの値によって道の生成を変える
+        # x=640に値を代入
+        if self.load_judge == 0:
+            # 上から中央へ
+            if self.new_field == Y_std:
+                if load_random < 4:
+                    self.new_field = Y_std + y_move
+                    self.load_judge = 1
+
+            # 中央から
+            elif self.new_field == Y_std + y_move:
+                # 中央から下へ
+                if load_random > 4 and load_random < 8:
+                    self.new_field = Y_std + y_move + y_move
+                    self.load_judge = 1
+                # 中央から上へ
+                elif load_random < 996 and load_random>992:
+                    self.new_field = Y_std
+                    self.load_judge = 1
+
+            # 下から中央へ
+            elif self.new_field == Y_std + y_move + y_move:
+                if load_random > 996:
+                    self.new_field = Y_std + y_move
+                    self.load_judge = 1
+
+        # x=640に次の生成分の値を代入
+        self.y_load[640] = self.new_field
+
+        # 道の描画
+        i = 640
+        while True:
+            pygame.draw.line(screen, (0, 0, 0), (self.x_load[i], self.y_load[i]), (self.x_load[i] - 1, self.y_load[i]), 25)
+            i -= 1
+            if i == -1:
+                break
 
     def load_detection(self):
         """正誤判定"""
