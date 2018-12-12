@@ -167,7 +167,7 @@ class Mygame:
                 self.init_game()
 
                 # 画面の切り替え効果音再生
-                self.sceneSwitch_sound.play()
+                self.scene_switch_sound.play()
 
                 if self.game_state == START:       # スタート画面からの移動
                     self.game_state = PLAY
@@ -186,14 +186,14 @@ class Mygame:
                     if self.y != Y_std - y_move:
                         self.y -= y_move
                         # キャラの移動効果音再生
-                        self.charSwitch_sound.play()
+                        self.char_switch_sound.play()
 
                 # 一番下に位置しているとき以外に下へ移動
                 if event.key == K_DOWN or event.key == K_LEFT or event.key == K_a:
                     if self.y != Y_std + y_move:
                         self.y += y_move
                         # キャラの移動効果音再生
-                        self.charSwitch_sound.play()
+                        self.char_switch_sound.play()
 
     def make_load(self, screen):
         """道の生成"""
@@ -253,6 +253,7 @@ class Mygame:
                 self.load_judge = 1
 
     def draw_load(self, screen):
+        """道を描画する"""
         i = 640
         while True:
             pygame.draw.line(screen, (0, 0, 0), (self.x_load[i], self.y_load[i]),
@@ -283,9 +284,9 @@ class Mygame:
         pygame.mixer.quit()
         pygame.mixer.init(44100, 16, 2, 1024)
         # 画面の切り替え効果音
-        self.sceneSwitch_sound = pygame.mixer.Sound("sceneswitch2.wav")
+        self.scene_switch_sound = pygame.mixer.Sound("sceneswitch2.wav")
         # キャラの移動効果音
-        self.charSwitch_sound = pygame.mixer.Sound("jump-anime1.wav")
+        self.char_switch_sound = pygame.mixer.Sound("jump-anime1.wav")
 
 
 if __name__ == "__main__":
