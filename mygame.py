@@ -11,10 +11,11 @@ SCREEN_SIZE = (640, 480)  # 画面サイズ
 X_std = 100
 Y_std = 240
 y_move = 88
-x_move = 20  # 要変更
+x_move = 20
 
 class Mygame:
     def __init__(self):
+        """コンストラクタ"""
         # Pygameを初期化
         pygame.init()
 
@@ -25,8 +26,8 @@ class Mygame:
         pygame.display.set_caption(u"HelloWorld!")
 
         # 素材のロード
-        self.load_images()
-        self.load_sounds()
+        self.load_images()  # 画像
+        self.load_sounds()  # 音楽
 
         # ゲーム状態の初期化
         self.game_state = START
@@ -34,20 +35,16 @@ class Mygame:
         # 値の初期化
         self.init_game()
 
-        #
-        self.flag_restart = False
-
         # メインループ開始
         # clock = pygame.time.Clock()
         while True:
             # clock.tick(60)
-            # self.update()
-            self.draw(screen)  # 画面の描画
+            self.draw(screen)        # 画面の描画
             pygame.display.update()  # 画面の更新
-            self.key_handler()  # イベントの発生
+            self.key_handler()       # イベントの発生
 
     def init_game(self):
-        """ゲームオブジェクトの初期化"""
+        """値の初期化"""
         self.time = 0
         i = 0
         self.load_judge = 0
@@ -67,25 +64,25 @@ class Mygame:
             if i == 641:
                 break
 
-    def update(self):
-        """ゲーム状態の更新"""
-        if self.game_state == PLAY:
-            self.update()
-
     def draw(self, screen):
         """描画"""
         if self.game_state == START:
+            """プレイ画面"""
             # 画面を白色で塗りつぶす
             screen.fill((255, 255, 255))
+
             # タイトルを描画
             sysfont = pygame.font.SysFont(None, 100)
             title = sysfont.render("HelloWorld!", True, (0, 0, 0))
             screen.blit(title, (125, 180))
+
             # TAPTOSPACE
             sysfont1 = pygame.font.SysFont(None, 30)
             start = sysfont1.render("TAP TO SPACE", True, (0, 0, 0))
             screen.blit(start, (240, 275))
+
         elif self.game_state == PLAY:
+            """プレイ画面"""
             # 画面を白色で塗りつぶす
             screen.fill((255, 255, 255))
             # 背景画像の追加
@@ -150,28 +147,35 @@ class Mygame:
                 pygame.mixer.music.stop()
 
         elif self.game_state == GAMEOVER:
+            """リザルト画面"""
             # 画面を黒色で塗りつぶす
             screen.fill((0, 0, 0))
+
             # result画面のbgm
-            if self.flag_endBgm == False:
+            if self.flag_endBgm == False:  # 最初だけ読み込む
                 pygame.mixer.music.load("orehamou.mp3")
                 pygame.mixer.music.play(-1)  # ループ再生
                 self.flag_endBgm = True
+
             # GameOverを描画
             sysfont = pygame.font.SysFont(None, 100)
             end = sysfont.render("Game Over", True, (255, 0, 0))
             screen.blit(end, (135, 180))
+
             # scoreを描画
             sysfont1 = pygame.font.SysFont(None, 30)
             score = sysfont1.render("score", True, (255, 255, 255))
             screen.blit(score, (250, 300))
+
             # load_length
             sysfont3 = pygame.font.SysFont(None, 80)
             load_length1 = sysfont3.render(format(int(self.time / 100)), True, (255, 255, 255))
             screen.blit(load_length1, (320, 275))
+
             # TAPTOSPACE
             start = sysfont1.render("TAP TO SPACE", True, (255, 255, 255))
             screen.blit(start, (240, 350))
+
             # クレジット表記
             sysfont4 = pygame.font.Font("ipaexg.ttf", 10)
             credit = sysfont4.render("効果音素材：ポケットサウンド – https://pocket-se.info/", True, (255, 255, 255))
@@ -180,33 +184,44 @@ class Mygame:
     def key_handler(self):
         """キーハンドラー"""
         for event in pygame.event.get():
+            # ゲームの強制終了
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+
+            # ゲームの終了
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+
+            # ゲーム状態の変更及びそれに伴う値の初期化・bgm停止
             elif event.type == KEYDOWN and event.key == K_SPACE:
                 # 値の初期化
                 self.init_game()
+
                 # 画面の切り替え効果音再生
                 self.sceneSwitch_sound.play()
-                if self.game_state == START:
+
+                if self.game_state == START:       # スタート画面からの移動
                     self.game_state = PLAY
-                elif self.game_state == GAMEOVER:
-                    self.init_game()
+
+                elif self.game_state == GAMEOVER:  # リスタート
                     self.game_state = PLAY
-                    # BGMの停止
+                    # ゲームオーバー中のBGMの停止
                     pygame.mixer.music.stop()
 
     def key_handler_PLAY(self):
+        """キャラの移動に関するキーハンドラー"""
         for event in pygame.event.get():
             if event.type == KEYDOWN:
+                # 一番上に位置しているとき以外に上への移動
                 if event.key == K_UP or event.key == K_RIGHT or event.key == K_d:
                     if self.y != Y_std - y_move:
                         self.y -= y_move
                         # キャラの移動効果音再生
                         self.charSwitch_sound.play()
+
+                # 一番下に位置しているとき以外に下へ移動
                 if event.key == K_DOWN or event.key == K_LEFT or event.key == K_a:
                     if self.y != Y_std + y_move:
                         self.y += y_move
@@ -216,6 +231,7 @@ class Mygame:
     def load_detection(self):
         """正誤判定"""
         # プレイヤーと道の正誤判定
+        # キャラの位置から-10~+100までを判断
         m = 89
         while True:
             m += 1
@@ -228,7 +244,6 @@ class Mygame:
     def load_images(self):
         """イメージのロード"""
         self.playerImg = pygame.image.load("sraim_alpha.png").convert_alpha()
-        self.backImg = pygame.image.load("forest.png")
 
     def load_sounds(self):
         """サウンドのロード"""
