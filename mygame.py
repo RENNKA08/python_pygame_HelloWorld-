@@ -11,7 +11,6 @@ SCREEN_SIZE = (640, 480)  # 画面サイズ
 X_std = 100
 Y_std = 240
 y_move = 88
-x_move = 20
 
 class Mygame:
     def __init__(self):
@@ -94,8 +93,7 @@ class Mygame:
             sysfont2 = pygame.font.SysFont(None, 20)
             load_length = sysfont2.render(format(int(self.time / 100)), True, (0, 0, 0))
             screen.blit(load_length, (600, 10))
-            # 更新のたびに追加
-            self.time += 1
+            self.time += 1  # 更新のたびに追加
 
             # 道の生成
             self.make_load(screen)
@@ -104,7 +102,7 @@ class Mygame:
             screen.blit(self.playerImg, (self.x, self.y))
 
             # キャラの移動
-            self.key_handler_PLAY()
+            self.key_handler_play()
 
             # 道の正誤判定
             self.load_detection()
@@ -179,7 +177,7 @@ class Mygame:
                     # ゲームオーバー中のBGMの停止
                     pygame.mixer.music.stop()
 
-    def key_handler_PLAY(self):
+    def key_handler_play(self):
         """キャラの移動に関するキーハンドラー"""
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -199,7 +197,6 @@ class Mygame:
 
     def make_load(self, screen):
         """道の生成"""
-        load_random = random.uniform(0, 1000)
         i = 0
 
         # 右のピクセルの線を左のピクセルにコピー
@@ -219,37 +216,47 @@ class Mygame:
 
         # randomの値によって道の生成を変える
         # x=640に値を代入
-        if self.load_judge == 0:
-            # 上から中央へ
-            if self.new_field == Y_std:
-                if load_random < 4:
-                    self.new_field = Y_std + y_move
-                    self.load_judge = 1
-
-            # 中央から
-            elif self.new_field == Y_std + y_move:
-                # 中央から下へ
-                if load_random > 4 and load_random < 8:
-                    self.new_field = Y_std + y_move + y_move
-                    self.load_judge = 1
-                # 中央から上へ
-                elif load_random < 996 and load_random>992:
-                    self.new_field = Y_std
-                    self.load_judge = 1
-
-            # 下から中央へ
-            elif self.new_field == Y_std + y_move + y_move:
-                if load_random > 996:
-                    self.new_field = Y_std + y_move
-                    self.load_judge = 1
+        elif self.load_judge == 0:
+            self.make_load_random()
 
         # x=640に次の生成分の値を代入
         self.y_load[640] = self.new_field
 
         # 道の描画
+        self.draw_load(screen)
+
+    def make_load_random(self):
+        """ランダムに道を生成する"""
+        load_random = random.uniform(0, 1000)
+
+        # 上から中央へ
+        if self.new_field == Y_std:
+            if load_random < 4:
+                self.new_field = Y_std + y_move
+                self.load_judge = 1
+
+        # 中央から
+        elif self.new_field == Y_std + y_move:
+            # 中央から下へ
+            if load_random > 4 and load_random < 8:
+                self.new_field = Y_std + y_move + y_move
+                self.load_judge = 1
+            # 中央から上へ
+            elif load_random < 996 and load_random > 992:
+                self.new_field = Y_std
+                self.load_judge = 1
+
+        # 下から中央へ
+        elif self.new_field == Y_std + y_move + y_move:
+            if load_random > 996:
+                self.new_field = Y_std + y_move
+                self.load_judge = 1
+
+    def draw_load(self, screen):
         i = 640
         while True:
-            pygame.draw.line(screen, (0, 0, 0), (self.x_load[i], self.y_load[i]), (self.x_load[i] - 1, self.y_load[i]), 25)
+            pygame.draw.line(screen, (0, 0, 0), (self.x_load[i], self.y_load[i]),
+                             (self.x_load[i] - 1, self.y_load[i]), 25)
             i -= 1
             if i == -1:
                 break
@@ -279,6 +286,7 @@ class Mygame:
         self.sceneSwitch_sound = pygame.mixer.Sound("sceneswitch2.wav")
         # キャラの移動効果音
         self.charSwitch_sound = pygame.mixer.Sound("jump-anime1.wav")
+
 
 if __name__ == "__main__":
     Mygame()
